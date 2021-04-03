@@ -1,4 +1,4 @@
-# Store Locator Transformer
+# Store Locator API
 
 This is the Store Locator API
 
