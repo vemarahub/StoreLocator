@@ -1,8 +1,11 @@
 # Store Locator API
 
 This is the Store Locator Application used to save and get details of store using a json file.
-The microservices rest api application developed using spring boot have below functionalities:
-•	API that create a or multiple store(s) with store details 
+The microservices rest api application developed using spring boot.
+
+## Functionalities
+
+* API that create a or multiple store(s) with store details 
         URL := http://localhost:9900/storelocator/stores
         Method  := POST
         Sample Request  :=
@@ -44,7 +47,7 @@ The microservices rest api application developed using spring boot have below fu
     "COUNTRYCODE": "NL"
   }]}
   
-•	API that can update an existing store 
+* API that can update an existing store 
       URL := http://localhost:9900/storelocator/store/<storeId>
       Method  := PUT
       Sample Request :=
@@ -67,15 +70,15 @@ The microservices rest api application developed using spring boot have below fu
     "COUNTRYCODE": "NL"
   }
   
-•	API that can delete a store. 
+* API that can delete a store. 
       URL := http://localhost:9900/storelocator/store/<storeId>
       Method  := DELETE
   
-•	API that can list all stores 
+* API that can list all stores 
       URL := http://localhost:9900/storelocator/stores
       Method  := GET
       
-•	API that can list all stores with following filters
+* API that can list all stores with following filters
       o	in a location (city) - 
                               URL := http://localhost:9900/storelocator/stores
                               Method  := GET
