@@ -2,6 +2,7 @@ package org.springboot.storelocator;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
 /**
  * Spring Boot Application Class for Store Locator
@@ -12,6 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
+@EnableCaching
 public class StoreLocatorApplication {
 
 	public static void main(String[] args) {

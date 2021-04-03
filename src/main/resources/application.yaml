@@ -2,6 +2,10 @@ spring:
   profiles: default
   application:
     name: StoreLocator
+  security:
+    user:
+      name: pvhadmin
+      password: pvhadmin
   jackson:
     mapper:
       ACCEPT_CASE_INSENSITIVE_PROPERTIES: true 
@@ -13,8 +17,10 @@ server:
   
 logging:
   level:
-    root: DEBUG
+    root: INFO
     
 store:
    data-file: store-data.json
+   authentication:
+      enabled: true
     

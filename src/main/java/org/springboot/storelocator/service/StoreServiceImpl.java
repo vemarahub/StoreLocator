@@ -8,12 +8,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+
+
 import org.springboot.storelocator.constants.StoreLocatorConstants;
 import org.springboot.storelocator.model.Store;
 import org.springboot.storelocator.model.Stores;
 import org.springboot.storelocator.util.StoreQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -61,6 +65,7 @@ public class StoreServiceImpl implements StoreService {
 	}
 
 	@Override
+	@Cacheable(value="store", key="#storeId")
 	public Store findStoreById(int storeId) throws IOException {
 		String methodName = "findStoreById";
 		LOGGER.entering(CLASSNAME, methodName);
@@ -109,6 +114,7 @@ public class StoreServiceImpl implements StoreService {
 	}
 
 	@Override
+	@Cacheable(value="stores", key="#queryParams")
 	public Stores getStores(MultiValueMap<String, String> queryParams) throws IOException {
 
 		String methodName = "getStores";
