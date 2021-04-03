@@ -1,0 +1,20 @@
+spring:
+  profiles: default
+  application:
+    name: StoreLocator
+  jackson:
+    mapper:
+      ACCEPT_CASE_INSENSITIVE_PROPERTIES: true 
+    
+server:
+  port: 9900
+  servlet:
+    context-path: /storelocator/  
+  
+logging:
+  level:
+    root: DEBUG
+    
+store:
+   data-file: store-data.json
+    
