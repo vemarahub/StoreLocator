@@ -11,72 +11,13 @@ The microservices rest api application is developed using spring boot.
 		
         Method  := POST
 		
-        Sample Request  :=
-		
-                { "stores" :[
-  {
-    "STORE_ID": 163,
-    "STORE_NAME": "Store XYZ",
-    "PHONE": "+123466789",
-    "ADDRESS1": "Shopping Centre, Unit 512",
-    "CITY": "Amsterdam",
-    "COUNTRY": "NL",
-    "ZIPCODE": "1155 EG",
-    "STLOCATTR": {
-      "LANGUAGE_ID": 44,
-      "OPENINGHOURS": "MON 09:00-21:00~~TUE 09:00-21:00~~WED 09:00-21:00~~THU 09:00-21:00~~FRI 09:00-21:00~~SAT 09:00-21:00~~SUN 09:00-20:00"
-    },
-    "LOCATION": {
-      "LAT": "12.35973",
-      "LNG": "14.87937"
-    },
-    "COUNTRYCODE": "NL"
-  },
-  {
-    "STORE_ID": 113,
-    "STORE_NAME": "Store ABC",
-    "PHONE": "+123456789",
-    "ADDRESS1": "Shopping Centre, Unit 425",
-    "CITY": "Zaandam",
-    "COUNTRY": "NL",
-    "ZIPCODE": "5545 EG",
-    "STLOCATTR": {
-      "LANGUAGE_ID": 44,
-      "OPENINGHOURS": "MON 09:00-21:00~~TUE 09:00-21:00~~WED 09:00-21:00~~THU 09:00-21:00~~FRI 09:00-21:00~~SAT CLOSED~~SUN CLOSED"
-    },
-    "LOCATION": {
-      "LAT": "52.35974",
-      "LNG": "40.87914"
-    },
-    "COUNTRYCODE": "NL"
-  }]}
-  
+       
 * API that can update an existing store 
 
       URL := http://localhost:9900/storelocator/store/<storeId>
 	  
-      Method  := PUT
-	  
-      Sample Request :=
-	  
-                  {
-    "STORE_ID": 163,
-    "STORE_NAME": "Store XYZ",
-    "PHONE": "+123466789",
-    "ADDRESS1": "Shopping Centre, Unit 512",
-    "CITY": "Amsterdam",
-    "COUNTRY": "NL",
-    "ZIPCODE": "1155 EG",
-    "STLOCATTR": {
-      "LANGUAGE_ID": 44,
-      "OPENINGHOURS": "MON 09:00-21:00~~TUE 09:00-21:00~~WED 09:00-21:00~~THU 09:00-21:00~~FRI 09:00-21:00~~SAT 09:00-21:00~~SUN 09:00-20:00"
-    },
-    "LOCATION": {
-      "LAT": "12.35973",
-      "LNG": "14.87937"
-    },
-    "COUNTRYCODE": "NL"
-  }
+      Method  := PUT  
+     
   
 * API that can delete a store
 
@@ -129,6 +70,13 @@ The microservices rest api application is developed using spring boot.
                               Request Param := current : true
                                                
 
+## Security
+Optional API Key based security which is disabled by default and can be enabled from application.yaml file 
+store:
+	authentication:
+      enabled: true
+
+"api-key" : "testapikey"
 
 
 ## Requirements
