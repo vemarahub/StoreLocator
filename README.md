@@ -1,14 +1,18 @@
 # Store Locator API
 
 This is the Store Locator Application used to save and get details of store using a json file.
-The microservices rest api application developed using spring boot.
+The microservices rest api application is developed using spring boot.
 
 ## Functionalities
 
 * API that create a or multiple store(s) with store details 
+
         URL := http://localhost:9900/storelocator/stores
+		
         Method  := POST
+		
         Sample Request  :=
+		
                 { "stores" :[
   {
     "STORE_ID": 163,
@@ -48,9 +52,13 @@ The microservices rest api application developed using spring boot.
   }]}
   
 * API that can update an existing store 
+
       URL := http://localhost:9900/storelocator/store/<storeId>
+	  
       Method  := PUT
+	  
       Sample Request :=
+	  
                   {
     "STORE_ID": 163,
     "STORE_NAME": "Store XYZ",
@@ -70,34 +78,54 @@ The microservices rest api application developed using spring boot.
     "COUNTRYCODE": "NL"
   }
   
-* API that can delete a store. 
+* API that can delete a store
+
       URL := http://localhost:9900/storelocator/store/<storeId>
+	  
       Method  := DELETE
   
 * API that can list all stores 
+
       URL := http://localhost:9900/storelocator/stores
+	  
       Method  := GET
       
 * API that can list all stores with following filters
+
       o	in a location (city) - 
+	  
                               URL := http://localhost:9900/storelocator/stores
+							  
                               Method  := GET
+							  
                               Request Param := city : <value>  
+							  
       o	in a country -
+	  
                               URL := http://localhost:9900/storelocator/stores
+							  
                               Method  := GET
+							  
                               Request Param := country : <value>
   
       o	stores within a given radius with uom (miles or kms) -
+	  
                               URL := http://localhost:9900/storelocator/stores
+							  
                               Method  := GET
+							  
                               Request Param := radius : <value>
+							  
                                                location : <value>  OR     latitude : <value>,longitude : <value>
+											   
                                                uom : kms or miles (optional)
                               
       o	stores that are open at the current time and date -
+	  
                               URL := http://localhost:9900/storelocator/stores
+							  
                               Method  := GET
+							  
                               Request Param := current : true
                                                
 
