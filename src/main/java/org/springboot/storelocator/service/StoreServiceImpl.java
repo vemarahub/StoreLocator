@@ -2,7 +2,6 @@ package org.springboot.storelocator.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -16,9 +15,6 @@ import org.springboot.storelocator.model.Stores;
 import org.springboot.storelocator.util.StoreQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;

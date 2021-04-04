@@ -4,6 +4,10 @@ package org.springboot.storelocator.model;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Generated;
+import javax.validation.constraints.NotEmpty;
+
+import org.springframework.beans.factory.annotation.Required;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,6 +34,7 @@ public class Store {
     @JsonProperty("STORE_ID")
     private Integer storeId;
     @JsonProperty("STORE_NAME")
+    @NotEmpty
     private String storeName;
     @JsonProperty("PHONE")
     private String phone;
@@ -51,6 +56,7 @@ public class Store {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("STORE_ID")
+    
     public Integer getStoreId() {
         return storeId;
     }

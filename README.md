@@ -14,14 +14,14 @@ The microservices rest api application is developed using spring boot.
        
 * API that can update an existing store 
 
-      URL := http://localhost:9900/storelocator/store/<storeId>
+      URL := http://localhost:9900/storelocator/stores/<storeId>
 	  
       Method  := PUT  
      
   
 * API that can delete a store
 
-      URL := http://localhost:9900/storelocator/store/<storeId>
+      URL := http://localhost:9900/storelocator/stores/<storeId>
 	  
       Method  := DELETE
   

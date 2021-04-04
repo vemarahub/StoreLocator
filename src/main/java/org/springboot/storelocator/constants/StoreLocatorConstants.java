@@ -9,9 +9,8 @@ public class StoreLocatorConstants {
 	public static final String ROOT_PATH = "/";
 
 	public static final String STORE_PATH = "/stores";
-	public static final String STORE_ID_PATH = "/store/{storeId}";
-	public static final String STORE_LOC_PATH = "/store/location/{city}";
-
+	public static final String STORE_ID_PATH = "/stores/{storeId}";
+	
 	public static final String SWAGGER_URL = "/swagger-ui.html";
 	public static final String STORE_DATA = "/data/store-data.json";
 
