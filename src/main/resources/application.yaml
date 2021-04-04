@@ -16,8 +16,8 @@ logging:
     root: INFO
     
 store:
-   data-file: store-data.json
+   data-file: ./build/resources/store-data.json
    authentication:
-      enabled: true
+      enabled: false
       auth-token: testapikey
     

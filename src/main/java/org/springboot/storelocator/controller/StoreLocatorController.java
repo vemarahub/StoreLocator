@@ -61,8 +61,7 @@ public class StoreLocatorController {
 	}
 
 	@GetMapping(value = StoreLocatorConstants.STORE_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Object> getStores(
-			@RequestParam(required = false) MultiValueMap<String, String> queryParams) {
+	public ResponseEntity<Object> getStores(@RequestParam(required = false) MultiValueMap<String, String> queryParams) {
 		String methodName = "getStores";
 		LOGGER.entering(CLASSNAME, methodName);
 		Stores storeResults = null;

@@ -1,5 +1,6 @@
 package org.springboot.storelocator.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -9,8 +10,6 @@ import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-
-
 import org.springboot.storelocator.constants.StoreLocatorConstants;
 import org.springboot.storelocator.model.Store;
 import org.springboot.storelocator.model.Stores;
@@ -19,8 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -29,35 +31,46 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 
 @Service
-@EnableCaching
+//@EnableCaching
 public class StoreServiceImpl implements StoreService {
 
 	private static final String CLASSNAME = StoreServiceImpl.class.getName();
 	private static final Logger LOGGER = Logger.getLogger(CLASSNAME);
 
-	@Value("${store.data-file}")
-	String resourceFile;
-
+	/*
+	 * @Value("${store.data-file}") String resourceFile;
+	 */
+	
+	@Value("classpath:/data/store-data.json")
+	Resource resourceData;
+	
 	@Autowired
 	StoreQueryBuilder storeQueryBuilder;
+	
 
 	@Override
 	public boolean saveStores(Stores newStores) throws IOException {
+		
 		String methodName = "saveStore";
 		LOGGER.entering(CLASSNAME, methodName);
 		List<Store> storesList;
 		Stores currentStores = new Stores();
 
 		ObjectMapper mapper = new ObjectMapper();
-		currentStores = mapper.readValue(Paths.get(resourceFile).toFile(), Stores.class);
-
+		
+		
+		//currentStores = mapper.readValue(Paths.get(resourceFile).toFile(), Stores.class);
+		currentStores = mapper.readValue(resourceData.getInputStream(), Stores.class);
+		
+		
 		storesList = currentStores.getStores();
 
 		storesList.addAll(newStores.getStores());
 
 		currentStores.setStores(storesList);
 
-		mapper.writeValue(Paths.get(resourceFile).toFile(), currentStores);
+		//mapper.writeValue(Paths.get(resourceFile).toFile(), currentStores);
+		mapper.writeValue(new File(resourceData.getURL().getPath()), currentStores);
 
 		LOGGER.exiting(CLASSNAME, methodName);
 		return true;
@@ -65,13 +78,13 @@ public class StoreServiceImpl implements StoreService {
 	}
 
 	@Override
-	@Cacheable(value="store", key="#storeId")
+	//@Cacheable(value="store", key="#storeId")
 	public Store findStoreById(int storeId) throws IOException {
 		String methodName = "findStoreById";
 		LOGGER.entering(CLASSNAME, methodName);
 		Stores stores = new Stores();
 		ObjectMapper mapper = new ObjectMapper();
-		stores = mapper.readValue(Paths.get(resourceFile).toFile(), Stores.class);
+		stores = mapper.readValue(resourceData.getInputStream(), Stores.class);
 
 		Optional<Store> store = stores.getStores().stream().filter(st -> st.getStoreId().equals(storeId)).findFirst();
 
@@ -90,10 +103,10 @@ public class StoreServiceImpl implements StoreService {
 		LOGGER.entering(CLASSNAME, methodName);
 		Stores stores = new Stores();
 		ObjectMapper mapper = new ObjectMapper();
-		stores = mapper.readValue(Paths.get(resourceFile).toFile(), Stores.class);
-
+		stores = mapper.readValue(resourceData.getInputStream(), Stores.class);
+		//stores = mapper.readValue(resourceData.getInputStream(), Stores.class);
 		stores.getStores().removeIf(st -> st.getStoreId().equals(store.getStoreId()));
-		mapper.writeValue(Paths.get(resourceFile).toFile(), stores);
+		mapper.writeValue(new File(resourceData.getURL().getPath()), stores);
 		LOGGER.exiting(CLASSNAME, methodName);
 
 	}
@@ -104,24 +117,25 @@ public class StoreServiceImpl implements StoreService {
 		LOGGER.entering(CLASSNAME, methodName);
 		Stores stores = new Stores();
 		ObjectMapper mapper = new ObjectMapper();
-		stores = mapper.readValue(Paths.get(resourceFile).toFile(), Stores.class);
-
+		//stores = mapper.readValue(Paths.get(resourceFile).toFile(), Stores.class);
+		stores = mapper.readValue(resourceData.getFile(), Stores.class);
 		stores.setStores(stores.getStores().stream().map(st -> st.getStoreId().equals(store.getStoreId()) ? store : st)
 				.collect(Collectors.toList()));
 
-		mapper.writeValue(Paths.get(resourceFile).toFile(), stores);
+		mapper.writeValue(new File(resourceData.getURL().getPath()), stores);
 		LOGGER.exiting(CLASSNAME, methodName);
 	}
 
 	@Override
-	@Cacheable(value="stores", key="#queryParams")
+	//@Cacheable(value="stores", key="#queryParams")
 	public Stores getStores(MultiValueMap<String, String> queryParams) throws IOException {
 
 		String methodName = "getStores";
 		LOGGER.entering(CLASSNAME, methodName);
 		Stores stores = new Stores();
 		ObjectMapper mapper = new ObjectMapper();
-		stores = mapper.readValue(Paths.get(resourceFile).toFile(), Stores.class);
+		//stores = mapper.readValue(Paths.get(resourceFile).toFile(), Stores.class);
+		stores = mapper.readValue(resourceData.getFile(), Stores.class);
 		String city;
 		String country;
 		String current;
@@ -176,10 +190,7 @@ public class StoreServiceImpl implements StoreService {
 
 		}
 
-		else {
-			stores = mapper.readValue(Paths.get(resourceFile).toFile(), Stores.class);
-
-		}
+		
 		LOGGER.exiting(CLASSNAME, methodName);
 		return stores;
 	}
