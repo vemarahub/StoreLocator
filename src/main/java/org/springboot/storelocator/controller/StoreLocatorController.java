@@ -3,14 +3,15 @@ package org.springboot.storelocator.controller;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletResponse;
+
 import javax.validation.Valid;
+
 import org.json.JSONObject;
 import org.springboot.storelocator.constants.StoreLocatorConstants;
 import org.springboot.storelocator.exception.StoreConfigurationException;
 import org.springboot.storelocator.exception.StoreServiceException;
-import org.springboot.storelocator.model.Stores;
 import org.springboot.storelocator.model.Store;
+import org.springboot.storelocator.model.Stores;
 import org.springboot.storelocator.service.StoreService;
 import org.springboot.storelocator.util.StoreLocatorHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @CrossOrigin(exposedHeaders = "errors, content-type")
-@RequestMapping("/")
+@RequestMapping(StoreLocatorConstants.ROOT_PATH)
 public class StoreLocatorController {
 
 	private static final String CLASSNAME = StoreLocatorController.class.getName();
@@ -55,11 +56,7 @@ public class StoreLocatorController {
 	@Value("#{servletContext.contextPath}")
 	private String servletContextPath;
 
-	@RequestMapping(value = StoreLocatorConstants.ROOT_PATH)
-	public void redirectToSwagger(HttpServletResponse response) throws IOException {
-		response.sendRedirect(this.servletContextPath + StoreLocatorConstants.SWAGGER_URL);
-	}
-
+	
 	@GetMapping(value = StoreLocatorConstants.STORE_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getStores(@RequestParam(required = false) MultiValueMap<String, String> queryParams) {
 		String methodName = "getStores";

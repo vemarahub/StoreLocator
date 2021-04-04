@@ -6,8 +6,6 @@ import java.util.Map;
 import javax.annotation.Generated;
 import javax.validation.constraints.NotEmpty;
 
-import org.springframework.beans.factory.annotation.Required;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
