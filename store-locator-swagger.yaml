@@ -43,7 +43,8 @@ paths:
           description: "Invalid input"
       security:
       - api_key: []
-  
+      
+
   /stores/{store-id}:
     put:
       tags:
@@ -185,7 +186,59 @@ paths:
       security:
       - api_key: []  
   
-  /stores/{store_id}:    
+  /stores/radius:
+    get:
+      tags:
+      - "store-locator-controller"
+      summary: "Find Store which are within radius(uom) from given loc or lat & long"
+      description: "Find store which are within radius (given in uom - kms or miles) from given location or from the latitude & longitude co-ordinates"
+      operationId: "getStores?radius&location"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "radius"
+        in: "query"
+        description: "radius for searching stores"
+        required: true
+        type: "integer"
+      
+      - name: "location"
+        in: "query"
+        description: "current location searching stores"
+        required: true
+        type: "integer" 
+        
+      - name: "longitude"
+        in: "query"
+        description: "current longitude coordinates"
+        required: true
+        type: "integer"
+        
+      - name: "latitude"
+        in: "query"
+        description: "current latitude coordinates"
+        required: true
+        type: "integer"  
+      
+      - name: "uom"
+        in: "query"
+        description: "unit of measurement kms or miles"
+        required: true
+        type: "string"  
+        
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Stores"
+        "400":
+          description: "Bad Request"
+        "404":
+          description: "Stores not found"
+      security:
+      - api_key: []  
+      
+  /stores/<store_id>:    
     delete:
       tags:
       - "store-locator-controller"
@@ -196,8 +249,8 @@ paths:
       - "application/json"
       parameters:
       - name: "store_id"
-        in: "path"
-        description: "ID of the order that needs to be deleted"
+        in: "query"
+        description: "ID of the Store that needs to be deleted"
         required: true
         type: "integer"
         minimum: 1.0
@@ -214,125 +267,89 @@ securityDefinitions:
     name: "api-key"
     in: "header"
     
-definitions:
-  Stores:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      petId:
-        type: "integer"
-        format: "int64"
-      quantity:
-        type: "integer"
-        format: "int32"
-      shipDate:
-        type: "string"
-        format: "date-time"
-      status:
-        type: "string"
-        description: "Order Status"
-        enum:
-        - "placed"
-        - "approved"
-        - "delivered"
-      complete:
-        type: "boolean"
-        default: false
-    xml:
-      name: "Order"
-  Category:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Category"
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-    xml:
-      name: "User"
-  Tag:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Tag"
-  Pet:
-    type: "object"
-    required:
-    - "name"
-    - "photoUrls"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      category:
-        $ref: "#/definitions/Category"
-      name:
-        type: "string"
-        example: "doggie"
-      photoUrls:
-        type: "array"
-        xml:
-          name: "photoUrl"
-          wrapped: true
-        items:
-          type: "string"
-      tags:
-        type: "array"
-        xml:
-          name: "tag"
-          wrapped: true
-        items:
-          $ref: "#/definitions/Tag"
-      status:
-        type: "string"
-        description: "pet status in the store"
-        enum:
-        - "available"
-        - "pending"
-        - "sold"
-    xml:
-      name: "Pet"
-  ApiResponse:
-    type: "object"
-    properties:
-      code:
-        type: "integer"
-        format: "int32"
-      type:
-        type: "string"
-      message:
-        type: "string"
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+"definitions": {
+    "Location": {
+      "type": "object",
+      "properties": {
+        "LAT": {
+          "type": "string"
+        },
+        "LNG": {
+          "type": "string"
+        }
+      },
+      "title": "Location"
+    },
+    
+    "Stlocattr": {
+      "type": "object",
+      "properties": {
+        "LANGUAGE_ID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "OPENINGHOURS": {
+          "type": "string"
+        }
+      },
+      "title": "Stlocattr"
+    },
+    "Store": {
+      "type": "object",
+      "properties": {
+        "ADDRESS1": {
+          "type": "string"
+        },
+        "CITY": {
+          "type": "string"
+        },
+        "COUNTRY": {
+          "type": "string"
+        },
+        "COUNTRYCODE": {
+          "type": "string"
+        },
+        "LOCATION": {
+          "$ref": "#/definitions/Location"
+        },
+        "PHONE": {
+          "type": "string"
+        },
+        "STLOCATTR": {
+          "$ref": "#/definitions/Stlocattr"
+        },
+        "STORE_ID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "STORE_NAME": {
+          "type": "string"
+        },
+        "ZIPCODE": {
+          "type": "string"
+        }
+      },
+      "title": "Store"
+    },
+    "Stores": {
+      "type": "object",
+      "properties": {
+        "stores": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Store"
+          }
+        }
+      },
+      "title": "Stores"
+    },
+    "View": {
+      "type": "object",
+      "properties": {
+        "contentType": {
+          "type": "string"
+        }
+      },
+      "title": "View"
+    }
+  }

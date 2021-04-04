@@ -1,7 +1,8 @@
 # Store Locator API
 
-This is the Store Locator Application used to save and get details of store using a json file.
-The microservices rest api application is developed using spring boot.
+This is the Store Locator Application used for Creating/Updating/Deleting/Searching details of store using a json file as storage.
+The store details are saved in a json file inside the resource/data directory of spring boot application.The application also supports filtering of stores on the basis of location,country,stores within a defined radius and stores currently open.
+ If authentication is enabled, when calling the APIs use api-key:testapikey to authenticate
 
 ## Functionalities
 
@@ -72,12 +73,18 @@ The microservices rest api application is developed using spring boot.
 
 ## Security
 Optional API Key based security which is disabled by default and can be enabled from application.yaml file 
+
 store:
+
 	authentication:
+	
       enabled: true
 
 "api-key" : "testapikey"
 
+## API Documentation
+
+Documentation for the StoreLocator API can be found in "store-locator-swagger.yaml" file.
 
 ## Requirements
 
