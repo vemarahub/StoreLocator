@@ -31,8 +31,7 @@ public class Store {
 
     @JsonProperty("STORE_ID")
     private Integer storeId;
-    @JsonProperty("STORE_NAME")
-    @NotEmpty
+    @JsonProperty("STORE_NAME")    
     private String storeName;
     @JsonProperty("PHONE")
     private String phone;

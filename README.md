@@ -117,6 +117,24 @@ docker build --rm -f "Dockerfile" -t store-locator:latest "."
 * Resources files (for e.g. configuration files , properties files etc.) under `/target/dependency/resources` are copied to `/app` in the image
 * Compiled class files under `/target/classes` are copied to `/app` in the image
 
+### Cloud Deployment
+To deploy the store locator app in cloud provider like AWS follow the below steps:
+
+To deploy in EC2 Environment:
+1. Run mvn install -DSkipTests on the project
+2. Copy the target folder and dockerfile to EC2 instance /tmp folder
+3. Run "docker build -t storelocator:1.0 ." to build docker image from /tmp
+4. Run " docker run --name store-locator -p 9900:9900 -d storelocator:1.0 " to start container service for the app.
+5. After setting up security groups to allow http protocol , access the api's using public ip of the EC2 instance.
+Eg: http://65.2.10.146:9900/storelocator/stores/
+
+Alternatively step 3 & 4 can be replaced by pulling image from docker hub:
+docker run --name store-locator -p 9900:9900 -d vemarahub/store_repo:store-locator
+
+
+
+
+
 ### Branches
 * `master`  - main branch
 

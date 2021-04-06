@@ -15,6 +15,9 @@ import org.springboot.storelocator.model.Stores;
 import org.springboot.storelocator.util.StoreQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -32,10 +35,6 @@ public class StoreServiceImpl implements StoreService {
 
 	private static final String CLASSNAME = StoreServiceImpl.class.getName();
 	private static final Logger LOGGER = Logger.getLogger(CLASSNAME);
-
-	/*
-	 * @Value("${store.data-file}") String resourceFile;
-	 */
 	
 	@Value("classpath:/data/store-data.json")
 	Resource resourceData;
@@ -44,7 +43,13 @@ public class StoreServiceImpl implements StoreService {
 	StoreQueryBuilder storeQueryBuilder;
 	
 
+	/**
+	 * 
+	 * Method to save a store or multiple stores to json data file
+	 * 
+	 */
 	@Override
+	//@CacheEvict(allEntries=true)
 	public boolean saveStores(Stores newStores) throws IOException {
 		
 		String methodName = "saveStore";
@@ -73,8 +78,12 @@ public class StoreServiceImpl implements StoreService {
 
 	}
 
+	/**
+	 *Method to find a store by storeId
+	 * 
+	 */
 	@Override
-	//@Cacheable(value="store", key="#storeId")
+	//@Cacheable(value="store", key="#storeId")	
 	public Store findStoreById(int storeId) throws IOException {
 		String methodName = "findStoreById";
 		LOGGER.entering(CLASSNAME, methodName);
@@ -93,7 +102,13 @@ public class StoreServiceImpl implements StoreService {
 		}
 	}
 
+	/**
+	 * 
+	 * Method to delete a store using storeId
+	 * 
+	 */
 	@Override
+	//@CacheEvict(allEntries=true)
 	public void deleteStore(Store store) throws IOException {
 		String methodName = "deleteStore";
 		LOGGER.entering(CLASSNAME, methodName);
@@ -107,7 +122,12 @@ public class StoreServiceImpl implements StoreService {
 
 	}
 
+	/**
+	 * Method to update store details for a store based on storeId
+	 * 
+	 */
 	@Override
+	//@CacheEvict(allEntries=true)
 	public void updateStore(Store store) throws IOException {
 		String methodName = "updateStore";
 		LOGGER.entering(CLASSNAME, methodName);
@@ -122,65 +142,51 @@ public class StoreServiceImpl implements StoreService {
 		LOGGER.exiting(CLASSNAME, methodName);
 	}
 
+	/**
+	 * Method to get stores based on the queryparams provided
+	 * if no query params provided all stores in json data file is returned
+	 * 
+	 */
 	@Override
 	//@Cacheable(value="stores", key="#queryParams")
 	public Stores getStores(MultiValueMap<String, String> queryParams) throws IOException {
 
 		String methodName = "getStores";
 		LOGGER.entering(CLASSNAME, methodName);
-		Stores stores = new Stores();
+		
+		Stores stores;
 		ObjectMapper mapper = new ObjectMapper();
 		//stores = mapper.readValue(Paths.get(resourceFile).toFile(), Stores.class);
 		stores = mapper.readValue(resourceData.getFile(), Stores.class);
-		String city;
-		String country;
-		String current;
+		
+		
+		
 
 		if (queryParams.containsKey(StoreLocatorConstants.FILTER_CITY)) {
-			city = queryParams.getFirst(StoreLocatorConstants.FILTER_CITY);
+			String city = queryParams.getFirst(StoreLocatorConstants.FILTER_CITY);
 			stores.setStores(stores.getStores().stream().filter(st -> st.getCity().equalsIgnoreCase(city))
 					.collect(Collectors.toList()));
 
 		} else if (queryParams.containsKey(StoreLocatorConstants.FILTER_COUNTRY)) {
-			country = queryParams.getFirst(StoreLocatorConstants.FILTER_COUNTRY);
+			String country = queryParams.getFirst(StoreLocatorConstants.FILTER_COUNTRY);
 			stores.setStores(stores.getStores().stream().filter(st -> st.getCountry().equalsIgnoreCase(country))
 					.collect(Collectors.toList()));
 		}
 
-		else if (((queryParams.containsKey(StoreLocatorConstants.FILTER_LATITUDE)
+		else if ((queryParams.containsKey(StoreLocatorConstants.FILTER_LATITUDE)
 				&& queryParams.containsKey(StoreLocatorConstants.FILTER_LONGITUDE))
 				|| (queryParams.containsKey(StoreLocatorConstants.FILTER_LOCATION)))
-				&& queryParams.containsKey(StoreLocatorConstants.FILTER_RADIUS)) {
+				 {
 
 			stores = storeQueryBuilder.buildQuery(queryParams, stores);
 
 		}
 
 		else if (queryParams.containsKey(StoreLocatorConstants.FILTER_CURRENT)) {
-			current = queryParams.getFirst(StoreLocatorConstants.FILTER_CURRENT);
+			String current = queryParams.getFirst(StoreLocatorConstants.FILTER_CURRENT);
 			if (current.equalsIgnoreCase("true")) {
 
-				LocalDate localDate = LocalDate.now();
-				java.time.DayOfWeek dayOfWeek = localDate.getDayOfWeek();
-
-				String currentDay = dayOfWeek.toString().substring(0, 3);
-
-				stores.setStores(stores.getStores().stream().filter(st -> {
-					for (String open : st.getStlocattr().getOpeninghours().split("~~")) {
-						if (!open.contains("CLOSED"))
-							if (open.contains(currentDay)) {
-								LOGGER.info("CURRENT DAY & TIME--->" + currentDay + " " + LocalTime.now());
-								LOGGER.info("RANGE TIME --->" + LocalTime.parse(open.substring(10, 15)) + " "
-										+ LocalTime.parse(open.substring(4, 9)));
-								if (LocalTime.now().isBefore(LocalTime.parse(open.substring(10, 15)))
-										&& LocalTime.now().isAfter(LocalTime.parse(open.substring(4, 9))))
-
-									return true;
-							}
-					}
-					return false;
-
-				}).collect(Collectors.toList()));
+				currentOpenStores(stores);
 
 			}
 
@@ -189,6 +195,35 @@ public class StoreServiceImpl implements StoreService {
 		
 		LOGGER.exiting(CLASSNAME, methodName);
 		return stores;
+	}
+
+	/**
+	 * Method to get list of currently open stores
+	 * 
+	 * @param stores
+	 */
+	private void currentOpenStores(Stores stores) {
+		LocalDate localDate = LocalDate.now();
+		java.time.DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+
+		String currentDay = dayOfWeek.toString().substring(0, 3);
+
+		stores.setStores(stores.getStores().stream().filter(st -> {
+			for (String open : st.getStlocattr().getOpeninghours().split("~~")) {
+				if (!open.contains("CLOSED"))
+					if (open.contains(currentDay)) {
+						LOGGER.info("CURRENT DAY & TIME--->" + currentDay + " " + LocalTime.now());
+						LOGGER.info("RANGE TIME --->" + LocalTime.parse(open.substring(10, 15)) + " "
+								+ LocalTime.parse(open.substring(4, 9)));
+						if (LocalTime.now().isBefore(LocalTime.parse(open.substring(10, 15)))
+								&& LocalTime.now().isAfter(LocalTime.parse(open.substring(4, 9))))
+
+							return true;
+					}
+			}
+			return false;
+
+		}).collect(Collectors.toList()));
 	}
 
 }

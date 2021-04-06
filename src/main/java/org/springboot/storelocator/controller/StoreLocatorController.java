@@ -3,19 +3,16 @@ package org.springboot.storelocator.controller;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Logger;
-
 import javax.validation.Valid;
-
 import org.json.JSONObject;
 import org.springboot.storelocator.constants.StoreLocatorConstants;
 import org.springboot.storelocator.exception.StoreConfigurationException;
 import org.springboot.storelocator.exception.StoreServiceException;
-import org.springboot.storelocator.model.Store;
 import org.springboot.storelocator.model.Stores;
+import org.springboot.storelocator.model.Store;
 import org.springboot.storelocator.service.StoreService;
 import org.springboot.storelocator.util.StoreLocatorHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,15 +50,19 @@ public class StoreLocatorController {
 	@Autowired
 	private StoreService storeService;
 
-	@Value("#{servletContext.contextPath}")
-	private String servletContextPath;
-
-	
+	/**
+	 * Method to search results from stores get get complete stores list,stores by city,
+	 * stores by country,stores currently open and stores within a given radius as per 
+	 * queryParams provided 
+	 * 
+	 * @param queryParams
+	 * @return
+	 */
 	@GetMapping(value = StoreLocatorConstants.STORE_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getStores(@RequestParam(required = false) MultiValueMap<String, String> queryParams) {
 		String methodName = "getStores";
 		LOGGER.entering(CLASSNAME, methodName);
-		Stores storeResults = null;
+		Stores storeResults;
 		try {
 
 			storeResults = storeService.getStores(queryParams);
@@ -80,7 +81,15 @@ public class StoreLocatorController {
 		return ResponseEntity.ok().body(storeResults);
 	}
 
-	@PutMapping(value = StoreLocatorConstants.STORE_ID_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
+	/**
+	 * Method to update a store for a particular store based on the given storeId and store details
+	 * 
+	 * @param storeId
+	 * @param store
+	 * @param bindingResult
+	 * @return
+	 */
+	@PutMapping(value = StoreLocatorConstants.STORE_ID_PATH, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> updateStore(@PathVariable("storeId") int storeId, @RequestBody @Valid Store store,
 			BindingResult bindingResult) {
 		String methodName = "updateStore";
@@ -115,6 +124,12 @@ public class StoreLocatorController {
 
 	}
 
+	/**
+	 * Method to delete a store based on the given storeId
+	 * 
+	 * @param storeId
+	 * @return
+	 */
 	@DeleteMapping(value = StoreLocatorConstants.STORE_ID_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> deleteStore(@PathVariable("storeId") int storeId) {
 		String methodName = "deleteStore";
@@ -146,6 +161,15 @@ public class StoreLocatorController {
 
 	}
 
+	/**
+	 * 
+	 * Method to save a store or list of stores
+	 * 
+	 * @param stores
+	 * @param bindingResult
+	 * @param ucBuilder
+	 * @return
+	 */
 	@PostMapping(value = StoreLocatorConstants.STORE_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> addStore(@RequestBody @Valid Stores stores, BindingResult bindingResult,
 			UriComponentsBuilder ucBuilder) {
