@@ -123,8 +123,7 @@ public class StoreServiceImpl implements StoreService {
 	 * Method to update store details for a store based on storeId
 	 * 
 	 */
-	@Override
-	
+	@Override	
 	public void updateStore(Store store) throws IOException {
 		String methodName = "updateStore";
 		LOGGER.entering(CLASSNAME, methodName);
@@ -145,8 +144,6 @@ public class StoreServiceImpl implements StoreService {
 	 * 
 	 */
 	@Override
-//	@CacheEvict(value="stores", key="#queryParams", beforeInvocation = true)
-//	@Cacheable(value="stores", key="#queryParams")
 	@CacheEvict(value="store-cache", key = "#queryParams",
 	condition = "#isCacheable == null || !#isCacheable", beforeInvocation = true)
 @Cacheable(value="store-cache", key = "#queryParams", 
@@ -186,7 +183,7 @@ public class StoreServiceImpl implements StoreService {
 
 		else if (queryParams.containsKey(StoreLocatorConstants.FILTER_CURRENT)) {
 			String current = queryParams.getFirst(StoreLocatorConstants.FILTER_CURRENT);
-			if (current.equalsIgnoreCase("true")) {
+			if (null != current && current.equalsIgnoreCase("true")) {
 
 				currentOpenStores(stores);
 

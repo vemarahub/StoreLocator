@@ -19,7 +19,7 @@ public class ServletRequestWrapper extends HttpServletRequestWrapper {
 
 	public ServletRequestWrapper(HttpServletRequest request) {
 		super(request);
-		// TODO Auto-generated constructor stub
+
 		parameters = request.getParameterMap();
 		headerMap = getHeaderMap(request);
 	}

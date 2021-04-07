@@ -8,6 +8,7 @@ import com.google.maps.model.LatLng;
 import org.springboot.storelocator.constants.StoreLocatorConstants;
 import org.springboot.storelocator.model.Stores;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 
@@ -18,6 +19,9 @@ public class StoreQueryBuilder {
 
 	@Autowired
 	LocationUtil locationUtil;
+	
+	@Value("${store.gmap-key}")
+	String gmapKey;
 	
 	/**
 	 * 
@@ -34,7 +38,7 @@ public class StoreQueryBuilder {
 		if (queryParams.containsKey(StoreLocatorConstants.FILTER_LOCATION)) {
 			String loc = queryParams.getFirst(StoreLocatorConstants.FILTER_LOCATION);
 			LatLng coordinates = locationUtil.fetchCoordinatesByLocation(loc,
-					StoreLocatorConstants.GMAP_KEY);
+					gmapKey);
 
 			queryLat = coordinates.lat;
 			queryLng = coordinates.lng;
@@ -73,7 +77,10 @@ public class StoreQueryBuilder {
 							indexLongitude,uom);
 					LOGGER.log(Level.FINEST, "Distance between {0},{1} and {2},{3} is {4} "+ uom,
 							new Object[] { latitude, longitude, indexLatitude, indexLongitude, distance });
-					return distance > radius;
+					if (distance > radius) {
+						return false;
+					}else
+						return true;
 					}).collect(Collectors.toList()));
 
 				

@@ -13,11 +13,12 @@ server:
   
 logging:
   level:
-    root: INFO
+    root: DEBUG
     
 store:
    data-file: ./build/resources/store-data.json
+   gmap-key: AIzaSyDvlTsR8nTb_ohYiowVitNdtrNAG-9thtM
    authentication:
-      enabled: false
+      enabled: true
       auth-token: testapikey
     

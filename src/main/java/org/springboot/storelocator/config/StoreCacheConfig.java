@@ -27,7 +27,7 @@ public class StoreCacheConfig extends CachingConfigurerSupport {
 		locationCache.setName("location-cache");
 		locationCache.setMemoryStoreEvictionPolicy("LRU");
 		locationCache.setMaxEntriesLocalHeap(1000);
-		locationCache.setTimeToLiveSeconds(10);
+		locationCache.setTimeToLiveSeconds(20);
 
 		CacheConfiguration storeCache = new CacheConfiguration();
 		storeCache.setName("store-cache");
