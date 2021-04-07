@@ -1,11 +1,13 @@
 package org.springboot.storelocator.util;
 
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import com.google.maps.model.LatLng;
 import org.springboot.storelocator.constants.StoreLocatorConstants;
+import org.springboot.storelocator.model.Store;
 import org.springboot.storelocator.model.Stores;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,37 +61,38 @@ public class StoreQueryBuilder {
 						indexLatitude = Double.parseDouble(queryParams.getFirst(StoreLocatorConstants.FILTER_LATITUDE));
 						indexLongitude = Double.parseDouble(queryParams.getFirst(StoreLocatorConstants.FILTER_LONGITUDE));
 					}
-
 					
-					stores.setStores(stores.getStores().stream().filter( st -> {
-					double latitude = Double.parseDouble(st.getLocation().getLat());
-					double longitude = Double.parseDouble(st.getLocation().getLng());
-					double radius = 100.0d;
-					if (null != queryParams.getFirst(StoreLocatorConstants.FILTER_RADIUS)) {
-						radius = Double.parseDouble(queryParams.getFirst(StoreLocatorConstants.FILTER_RADIUS));
-					}
-					String uom = StoreLocatorConstants.KMS;
-					if (null != queryParams.getFirst(StoreLocatorConstants.FILTER_UOM)) {
-						uom = queryParams.getFirst(StoreLocatorConstants.FILTER_UOM);
-					}
-
-					double distance = StoreLocatorHelper.getDistance(latitude, longitude, indexLatitude,
-							indexLongitude,uom);
-					LOGGER.log(Level.FINEST, "Distance between {0},{1} and {2},{3} is {4} "+ uom,
-							new Object[] { latitude, longitude, indexLatitude, indexLongitude, distance });
-					if (distance > radius) {
-						return false;
-					}else
-						return true;
-					}).collect(Collectors.toList()));
-
-				
-		
-		
+					stores.setStores(getRadiusStores(queryParams, stores, indexLatitude, indexLongitude));
+						
 	}
 				
 				LOGGER.exiting(CLASSNAME, methodName);
 				return stores;
 
+	}
+
+	public List<Store> getRadiusStores(MultiValueMap<String, String> queryParams, Stores stores, double indexLatitude,
+			double indexLongitude) {
+		return stores.getStores().stream().filter( st -> {
+		double latitude = Double.parseDouble(st.getLocation().getLat());
+		double longitude = Double.parseDouble(st.getLocation().getLng());
+		double radius = 100.0d;
+		if (null != queryParams.getFirst(StoreLocatorConstants.FILTER_RADIUS)) {
+			radius = Double.parseDouble(queryParams.getFirst(StoreLocatorConstants.FILTER_RADIUS));
+		}
+		String uom = StoreLocatorConstants.KMS;
+		if (null != queryParams.getFirst(StoreLocatorConstants.FILTER_UOM)) {
+			uom = queryParams.getFirst(StoreLocatorConstants.FILTER_UOM);
+		}
+
+		double distance = StoreLocatorHelper.getDistance(latitude, longitude, indexLatitude,
+				indexLongitude,uom);
+		LOGGER.log(Level.FINEST, "Distance between {0},{1} and {2},{3} is {4} "+ uom,
+				new Object[] { latitude, longitude, indexLatitude, indexLongitude, distance });
+		if (distance > radius) {
+			return false;
+		}else
+			return true;
+		}).collect(Collectors.toList());
 	}
 }

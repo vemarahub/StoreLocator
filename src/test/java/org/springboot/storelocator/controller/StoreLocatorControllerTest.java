@@ -7,19 +7,17 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springboot.storelocator.StoreGenerator;
 import org.springboot.storelocator.model.Store;
+import org.springboot.storelocator.model.StoreGenerator;
 import org.springboot.storelocator.model.Stores;
 import org.springboot.storelocator.service.ApplicationTestConfig;
 import org.springboot.storelocator.service.StoreServiceImpl;
@@ -56,16 +54,15 @@ class StoreLocatorControllerTest {
 	@Autowired
 	StoreQueryBuilder storeQueryBuilder;
 
-	Stores stores;
+	Stores stores = new Stores();
 
 	Stores storesTemp;
 
 	private MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
 
-	// private List<Store> owners;
 
 	@BeforeEach
-	public void initStores() {
+	 void initStores() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(storeLocatorController).build();
 		List<Store> storeList = new ArrayList<Store>();	
 		Store testStore = StoreGenerator.generate();
@@ -80,9 +77,9 @@ class StoreLocatorControllerTest {
 	}
 
 	@Test
-	public void testGetAllStores() throws Exception {
+	 void testGetAllStores() throws Exception {
 
-		// given(this.storeService.getStores(queryParams)).willReturn(stores);
+		
 		when(this.storeService.getStores(queryParams,false)).thenReturn(stores);
 
 		ResponseEntity<Object> response = storeLocatorController.getStores(queryParams,false);
@@ -91,20 +88,11 @@ class StoreLocatorControllerTest {
 		assertEquals(stores, storesData);
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		/*
-		 * this.mockMvc.perform(get("/stores") .accept(MediaType.APPLICATION_JSON))
-		 * .andExpect(status().isOk()) //
-		 * .andExpect(content().contentType("application/json"))
-		 * .andExpect(jsonPath("$.[0].storeId").value(100))
-		 * .andExpect(jsonPath("$.[0].storeName").value("Store Marvel"))
-		 * .andExpect(jsonPath("$.[1].storeId").value(200))
-		 * .andExpect(jsonPath("$.[1].storeName").value("Store DC"));
-		 */
 
 	}
 
 	@Test
-	public void testGetStoresByCity() throws Exception {
+	 void testGetStoresByCity() throws Exception {
 
 		queryParams.set("city", "Amsterdam");
 
@@ -114,8 +102,7 @@ class StoreLocatorControllerTest {
 		Stores storesData = (Stores) response.getBody();
 		assertNotNull(storesData);
 
-		stores.setStores(stores.getStores().stream().filter(st -> st.getCity().equals("Amsterdam"))
-				.collect(Collectors.toList()));
+		stores.getStores().get(0).setCity("Amsterdam");
 
 		assertEquals(stores.getStores().get(0).getCity(), storesData.getStores().get(0).getCity());
 		assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -123,7 +110,7 @@ class StoreLocatorControllerTest {
 	}
 
 	@Test
-	public void testGetStoresByCountry() throws Exception {
+	 void testGetStoresByCountry() throws Exception {
 
 		queryParams.set("country", "USA");
 
@@ -133,16 +120,14 @@ class StoreLocatorControllerTest {
 		Stores storesData = (Stores) response.getBody();
 		assertNotNull(storesData);
 
-		stores.setStores(
-				stores.getStores().stream().filter(st -> st.getCountry().equals("USA")).collect(Collectors.toList()));
-
+		
 		assertEquals(stores.getStores().get(0).getCountry(), storesData.getStores().get(0).getCountry());
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
 	}
 
 	@Test
-	public void testGetStoresByRadius() throws Exception {
+	 void testGetStoresByRadius() throws Exception {
 
 		queryParams.set("radius", "100");
 		queryParams.set("longitude", "50.44");
@@ -163,7 +148,7 @@ class StoreLocatorControllerTest {
 	}
 
 	@Test
-	public void testGetStoresCurrent() throws Exception {
+	 void testGetStoresCurrent() throws Exception {
 
 		queryParams.set("current", "true");
 
@@ -172,25 +157,8 @@ class StoreLocatorControllerTest {
 		ResponseEntity<Object> response = storeLocatorController.getStores(queryParams,false);
 		Stores storesData = (Stores) response.getBody();
 		assertNotNull(storesData);
-		LocalDate localDate = LocalDate.now();
-		java.time.DayOfWeek dayOfWeek = localDate.getDayOfWeek();
-		String currentDay = dayOfWeek.toString().substring(0, 3);
-		stores.setStores(stores.getStores().stream().filter(st -> {
-			for (String open : st.getStlocattr().getOpeninghours().split("~~")) {
-
-				if (!open.contains("CLOSED"))
-
-					if (open.contains(currentDay)) {
-
-						if (LocalTime.now().isBefore(LocalTime.parse(open.substring(10, 15)))
-								&& LocalTime.now().isAfter(LocalTime.parse(open.substring(4, 9))))
-
-							return true;
-					}
-			}
-			return false;
-
-		}).collect(Collectors.toList()));
+		
+		stores.getStores().get(0).setStoreId(100);
 
 		assertEquals(stores.getStores().get(0).getStoreId(), storesData.getStores().get(0).getStoreId());
 		assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -198,7 +166,7 @@ class StoreLocatorControllerTest {
 	}
 
 	@Test
-	public void testDeleteStore() throws Exception {
+	 void testDeleteStore() throws Exception {
 		Store newStore = stores.getStores().get(0);
 		ObjectMapper mapper = new ObjectMapper();
 		String newStoreAsJSON = mapper.writeValueAsString(newStore);
@@ -208,7 +176,7 @@ class StoreLocatorControllerTest {
 	}
 
 	@Test
-	public void testUpdateStore() throws Exception {
+	 void testUpdateStore() throws Exception {
 		Store newStore = stores.getStores().get(0);
 		newStore.setStoreName("Tommy");
 		
@@ -226,7 +194,7 @@ class StoreLocatorControllerTest {
 	}
 
     @Test   
-    public void testCreateStores() throws Exception {
+     void testCreateStores() throws Exception {
     	
     	storeService.saveStores(stores);
     	when(this.storeService.getStores(queryParams,false)).thenReturn(stores);

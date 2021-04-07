@@ -1,8 +1,6 @@
-package org.springboot.storelocator;
+package org.springboot.storelocator.model;
 
-import org.springboot.storelocator.model.Location;
-import org.springboot.storelocator.model.Stlocattr;
-import org.springboot.storelocator.model.Store;
+
 
 public class StoreGenerator {
     public static Store generate() {
@@ -40,8 +38,8 @@ public class StoreGenerator {
         store.setZipcode("9877");
         store.setAddress1("32,26 avenue,NY");
         Location location = new Location();
-        location.setLat("40.22");
-        location.setLng("60.34");
+        location.setLat("52.35974");
+        location.setLng("40.87914");
         Stlocattr stlocattr = new Stlocattr();
         stlocattr.setLanguageId(100);
         stlocattr.setOpeninghours(
