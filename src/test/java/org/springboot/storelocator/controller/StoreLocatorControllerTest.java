@@ -19,8 +19,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springboot.storelocator.StoreGenerator;
-import org.springboot.storelocator.model.Location;
-import org.springboot.storelocator.model.Stlocattr;
 import org.springboot.storelocator.model.Store;
 import org.springboot.storelocator.model.Stores;
 import org.springboot.storelocator.service.ApplicationTestConfig;
@@ -85,9 +83,9 @@ class StoreLocatorControllerTest {
 	public void testGetAllStores() throws Exception {
 
 		// given(this.storeService.getStores(queryParams)).willReturn(stores);
-		when(this.storeService.getStores(queryParams)).thenReturn(stores);
+		when(this.storeService.getStores(queryParams,false)).thenReturn(stores);
 
-		ResponseEntity<Object> response = storeLocatorController.getStores(queryParams);
+		ResponseEntity<Object> response = storeLocatorController.getStores(queryParams,false);
 		Stores storesData = (Stores) response.getBody();
 		assertNotNull(storesData);
 		assertEquals(stores, storesData);
@@ -110,9 +108,9 @@ class StoreLocatorControllerTest {
 
 		queryParams.set("city", "Amsterdam");
 
-		when(this.storeService.getStores(queryParams)).thenReturn(stores);
+		when(this.storeService.getStores(queryParams,false)).thenReturn(stores);
 
-		ResponseEntity<Object> response = storeLocatorController.getStores(queryParams);
+		ResponseEntity<Object> response = storeLocatorController.getStores(queryParams,false);
 		Stores storesData = (Stores) response.getBody();
 		assertNotNull(storesData);
 
@@ -129,9 +127,9 @@ class StoreLocatorControllerTest {
 
 		queryParams.set("country", "USA");
 
-		when(this.storeService.getStores(queryParams)).thenReturn(stores);
+		when(this.storeService.getStores(queryParams,false)).thenReturn(stores);
 
-		ResponseEntity<Object> response = storeLocatorController.getStores(queryParams);
+		ResponseEntity<Object> response = storeLocatorController.getStores(queryParams,false);
 		Stores storesData = (Stores) response.getBody();
 		assertNotNull(storesData);
 
@@ -150,9 +148,9 @@ class StoreLocatorControllerTest {
 		queryParams.set("longitude", "50.44");
 		queryParams.set("latitude", "44.23");
 
-		when(this.storeService.getStores(queryParams)).thenReturn(stores);
+		when(this.storeService.getStores(queryParams,false)).thenReturn(stores);
 
-		ResponseEntity<Object> response = storeLocatorController.getStores(queryParams);
+		ResponseEntity<Object> response = storeLocatorController.getStores(queryParams,false);
 		Stores storesData = (Stores) response.getBody();
 		assertNotNull(storesData);
 
@@ -169,9 +167,9 @@ class StoreLocatorControllerTest {
 
 		queryParams.set("current", "true");
 
-		when(this.storeService.getStores(queryParams)).thenReturn(stores);
+		when(this.storeService.getStores(queryParams,false)).thenReturn(stores);
 
-		ResponseEntity<Object> response = storeLocatorController.getStores(queryParams);
+		ResponseEntity<Object> response = storeLocatorController.getStores(queryParams,false);
 		Stores storesData = (Stores) response.getBody();
 		assertNotNull(storesData);
 		LocalDate localDate = LocalDate.now();
@@ -217,8 +215,8 @@ class StoreLocatorControllerTest {
 		
 		storeService.updateStore(newStore);
 		queryParams=null;
-		when(this.storeService.getStores(queryParams)).thenReturn(stores);
-		ResponseEntity<Object> response = storeLocatorController.getStores(queryParams);
+		when(this.storeService.getStores(queryParams,false)).thenReturn(stores);
+		ResponseEntity<Object> response = storeLocatorController.getStores(queryParams,false);
 		Stores storesData = (Stores) response.getBody();
 		
 		assertNotNull(storesData);
@@ -231,8 +229,8 @@ class StoreLocatorControllerTest {
     public void testCreateStores() throws Exception {
     	
     	storeService.saveStores(stores);
-    	when(this.storeService.getStores(queryParams)).thenReturn(stores);
-    	ResponseEntity<Object> response = storeLocatorController.getStores(queryParams);
+    	when(this.storeService.getStores(queryParams,false)).thenReturn(stores);
+    	ResponseEntity<Object> response = storeLocatorController.getStores(queryParams,false);
 		Stores storesData = (Stores) response.getBody();
 		
 		assertNotNull(storesData);

@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 
 @Service
-//@EnableCaching
+@EnableCaching
 public class StoreServiceImpl implements StoreService {
 
 	private static final String CLASSNAME = StoreServiceImpl.class.getName();
@@ -49,18 +49,17 @@ public class StoreServiceImpl implements StoreService {
 	 * 
 	 */
 	@Override
-	//@CacheEvict(allEntries=true)
+	
 	public boolean saveStores(Stores newStores) throws IOException {
 		
 		String methodName = "saveStore";
 		LOGGER.entering(CLASSNAME, methodName);
 		List<Store> storesList;
-		Stores currentStores = new Stores();
+		Stores currentStores;
 
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper();	
 		
-		
-		//currentStores = mapper.readValue(Paths.get(resourceFile).toFile(), Stores.class);
+
 		currentStores = mapper.readValue(resourceData.getInputStream(), Stores.class);
 		
 		
@@ -69,8 +68,7 @@ public class StoreServiceImpl implements StoreService {
 		storesList.addAll(newStores.getStores());
 
 		currentStores.setStores(storesList);
-
-		//mapper.writeValue(Paths.get(resourceFile).toFile(), currentStores);
+		
 		mapper.writeValue(new File(resourceData.getURL().getPath()), currentStores);
 
 		LOGGER.exiting(CLASSNAME, methodName);
@@ -83,11 +81,10 @@ public class StoreServiceImpl implements StoreService {
 	 * 
 	 */
 	@Override
-	//@Cacheable(value="store", key="#storeId")	
 	public Store findStoreById(int storeId) throws IOException {
 		String methodName = "findStoreById";
 		LOGGER.entering(CLASSNAME, methodName);
-		Stores stores = new Stores();
+		Stores stores;
 		ObjectMapper mapper = new ObjectMapper();
 		stores = mapper.readValue(resourceData.getInputStream(), Stores.class);
 
@@ -108,14 +105,14 @@ public class StoreServiceImpl implements StoreService {
 	 * 
 	 */
 	@Override
-	//@CacheEvict(allEntries=true)
+	
 	public void deleteStore(Store store) throws IOException {
 		String methodName = "deleteStore";
 		LOGGER.entering(CLASSNAME, methodName);
-		Stores stores = new Stores();
+		Stores stores;
 		ObjectMapper mapper = new ObjectMapper();
 		stores = mapper.readValue(resourceData.getInputStream(), Stores.class);
-		//stores = mapper.readValue(resourceData.getInputStream(), Stores.class);
+		
 		stores.getStores().removeIf(st -> st.getStoreId().equals(store.getStoreId()));
 		mapper.writeValue(new File(resourceData.getURL().getPath()), stores);
 		LOGGER.exiting(CLASSNAME, methodName);
@@ -127,13 +124,13 @@ public class StoreServiceImpl implements StoreService {
 	 * 
 	 */
 	@Override
-	//@CacheEvict(allEntries=true)
+	
 	public void updateStore(Store store) throws IOException {
 		String methodName = "updateStore";
 		LOGGER.entering(CLASSNAME, methodName);
-		Stores stores = new Stores();
+		Stores stores;
 		ObjectMapper mapper = new ObjectMapper();
-		//stores = mapper.readValue(Paths.get(resourceFile).toFile(), Stores.class);
+		
 		stores = mapper.readValue(resourceData.getFile(), Stores.class);
 		stores.setStores(stores.getStores().stream().map(st -> st.getStoreId().equals(store.getStoreId()) ? store : st)
 				.collect(Collectors.toList()));
@@ -148,15 +145,20 @@ public class StoreServiceImpl implements StoreService {
 	 * 
 	 */
 	@Override
-	//@Cacheable(value="stores", key="#queryParams")
-	public Stores getStores(MultiValueMap<String, String> queryParams) throws IOException {
+//	@CacheEvict(value="stores", key="#queryParams", beforeInvocation = true)
+//	@Cacheable(value="stores", key="#queryParams")
+	@CacheEvict(value="store-cache", key = "#queryParams",
+	condition = "#isCacheable == null || !#isCacheable", beforeInvocation = true)
+@Cacheable(value="store-cache", key = "#queryParams", 
+	condition = "#isCacheable != null && #isCacheable")
+	public Stores getStores(MultiValueMap<String, String> queryParams,boolean isCacheable) throws IOException {
 
 		String methodName = "getStores";
 		LOGGER.entering(CLASSNAME, methodName);
 		
 		Stores stores;
 		ObjectMapper mapper = new ObjectMapper();
-		//stores = mapper.readValue(Paths.get(resourceFile).toFile(), Stores.class);
+	
 		stores = mapper.readValue(resourceData.getFile(), Stores.class);
 		
 		
@@ -210,16 +212,15 @@ public class StoreServiceImpl implements StoreService {
 
 		stores.setStores(stores.getStores().stream().filter(st -> {
 			for (String open : st.getStlocattr().getOpeninghours().split("~~")) {
-				if (!open.contains("CLOSED"))
-					if (open.contains(currentDay)) {
-						LOGGER.info("CURRENT DAY & TIME--->" + currentDay + " " + LocalTime.now());
-						LOGGER.info("RANGE TIME --->" + LocalTime.parse(open.substring(10, 15)) + " "
-								+ LocalTime.parse(open.substring(4, 9)));
-						if (LocalTime.now().isBefore(LocalTime.parse(open.substring(10, 15)))
-								&& LocalTime.now().isAfter(LocalTime.parse(open.substring(4, 9))))
+				if (!open.contains("CLOSED") && open.contains(currentDay)
+						&&
+						LocalTime.now().isBefore(LocalTime.parse(open.substring(10, 15)))
+						&& LocalTime.now().isAfter(LocalTime.parse(open.substring(4, 9))))				
+						
+						
 
 							return true;
-					}
+					
 			}
 			return false;
 

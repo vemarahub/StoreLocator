@@ -13,7 +13,6 @@ import org.springboot.storelocator.model.Store;
 import org.springboot.storelocator.service.StoreService;
 import org.springboot.storelocator.util.StoreLocatorHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -59,13 +58,13 @@ public class StoreLocatorController {
 	 * @return
 	 */
 	@GetMapping(value = StoreLocatorConstants.STORE_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Object> getStores(@RequestParam(required = false) MultiValueMap<String, String> queryParams) {
+	public ResponseEntity<Object> getStores(@RequestParam(required = false) MultiValueMap<String, String> queryParams,@RequestParam(required = false) boolean isCacheable) {
 		String methodName = "getStores";
 		LOGGER.entering(CLASSNAME, methodName);
 		Stores storeResults;
 		try {
 
-			storeResults = storeService.getStores(queryParams);
+			storeResults = storeService.getStores(queryParams,isCacheable);
 
 		} catch (StoreConfigurationException configException) {
 			return StoreLocatorHelper.handleStoreException(configException.getMessage(), HttpStatus.NOT_FOUND);
@@ -99,7 +98,7 @@ public class StoreLocatorController {
 
 			Store currentStore = storeService.findStoreById(storeId);
 			if (currentStore == null) {
-				return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
 
 			if (currentStore.getStoreId().equals(store.getStoreId())) {
@@ -111,7 +110,7 @@ public class StoreLocatorController {
 						.getSimpleJsonResponseString(store.getStoreName() + StoreLocatorConstants.UPDATE_SUCCESS));
 
 			}
-			return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
 		} catch (StoreConfigurationException configException) {
 			return StoreLocatorHelper.handleStoreException(configException.getMessage(), HttpStatus.NOT_FOUND);
@@ -139,14 +138,14 @@ public class StoreLocatorController {
 
 			Store store = storeService.findStoreById(storeId);
 			if (store == null) {
-				return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
 			}
 			this.storeService.deleteStore(store);
 
 			LOGGER.exiting(CLASSNAME, methodName);
 
-			// return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
+			
 			return ResponseEntity.ok().body(StoreLocatorHelper
 					.getSimpleJsonResponseString(store.getStoreName() + StoreLocatorConstants.DELETE_SUCCESS));
 
@@ -176,8 +175,6 @@ public class StoreLocatorController {
 		String methodName = "addStore";
 		LOGGER.entering(CLASSNAME, methodName);
 
-		HttpHeaders headers = new HttpHeaders();
-
 		JSONObject response = new JSONObject();
 		try {
 			if (bindingResult.hasErrors() || stores.getStores().isEmpty()) {
@@ -185,15 +182,11 @@ public class StoreLocatorController {
 						HttpStatus.BAD_REQUEST);
 			}
 
-			if (Optional.ofNullable(stores).isPresent()) {
-
+	
 				Optional<Store> currentStore = stores.getStores().stream().filter(st -> {
 					try {
-						if (storeService.findStoreById(st.getStoreId()) != null)
-							return true;
-
-						else
-							return false;
+						return storeService.findStoreById(st.getStoreId()) != null;
+											
 					} catch (IOException e) {
 						return true;
 
@@ -214,9 +207,7 @@ public class StoreLocatorController {
 						.body(StoreLocatorHelper.getSimpleJsonResponseString(
 								stores.getStores().size() + StoreLocatorConstants.POST_SUCCESS));
 
-			}
-
-			return new ResponseEntity<Object>(headers, HttpStatus.NO_CONTENT);
+	
 
 		} catch (StoreConfigurationException configException) {
 			return StoreLocatorHelper.handleStoreException(configException.getMessage(), HttpStatus.NOT_FOUND);

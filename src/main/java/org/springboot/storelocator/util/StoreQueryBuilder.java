@@ -73,10 +73,7 @@ public class StoreQueryBuilder {
 							indexLongitude,uom);
 					LOGGER.log(Level.FINEST, "Distance between {0},{1} and {2},{3} is {4} "+ uom,
 							new Object[] { latitude, longitude, indexLatitude, indexLongitude, distance });
-					if (distance > radius) {
-						return false;
-					}else
-						return true;
+					return distance > radius;
 					}).collect(Collectors.toList()));
 
 				

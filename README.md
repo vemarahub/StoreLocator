@@ -86,6 +86,10 @@ store:
 
 Documentation for the StoreLocator API can be found in "store-locator-swagger.yaml" file.
 
+## API Caching
+
+Caching can be enabled for search filters using optional request param isCacheable=true
+
 ## Requirements
 
 * [Java](https://www.oracle.com/java/)

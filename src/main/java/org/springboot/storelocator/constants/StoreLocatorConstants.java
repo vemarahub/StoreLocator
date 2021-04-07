@@ -32,6 +32,7 @@ public class StoreLocatorConstants {
 	public static final String KMS = "Kms";
 
 	//public static final String GMAP_KEY = "AIzaSyAfGrHRaFjIYIIiWOdaGGTb_EkHavcK47w";
+	
 	public static final String GMAP_KEY ="AIzaSyDvlTsR8nTb_ohYiowVitNdtrNAG-9thtM";
 	public static final String MESSAGE = "message";
 

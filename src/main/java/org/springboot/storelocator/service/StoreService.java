@@ -14,7 +14,7 @@ public interface StoreService {
 	
 	boolean saveStores(Stores store) throws IOException;
 
-	Stores getStores(MultiValueMap<String, String> queryParams) throws IOException;
+	Stores getStores(MultiValueMap<String, String> queryParams,boolean isCacheable) throws IOException;
 
 	Store findStoreById(int storeId) throws IOException;
 

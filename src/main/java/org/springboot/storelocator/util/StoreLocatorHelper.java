@@ -10,7 +10,6 @@ import org.springboot.storelocator.model.StoreLocatorErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-//import com.app.exception.common.ApiError;
 
 
 
@@ -20,6 +19,8 @@ public class StoreLocatorHelper {
 	private static final Logger LOGGER = Logger.getLogger(CLASSNAME);
 
 	
+	
+	
 	public static ResponseEntity<Object> handleStoreException(String errMessage,HttpStatus status) {
 		final String methodName = "handleStoreException";
 		LOGGER.entering(CLASSNAME, methodName);
@@ -28,7 +29,7 @@ public class StoreLocatorHelper {
 		errorResponse.addError(errMessage, status.toString());
 
 		LOGGER.exiting(CLASSNAME, methodName);
-		return new ResponseEntity<Object>(errorResponse, status);
+		return new ResponseEntity<>(errorResponse, status);
 	}
 	
 	public static String getSimpleJsonResponseString(String msg) {

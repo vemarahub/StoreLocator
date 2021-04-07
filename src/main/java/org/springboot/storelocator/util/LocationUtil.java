@@ -20,7 +20,7 @@ public class LocationUtil {
 
 
 
-	@Cacheable("storelocator")
+	@Cacheable(value="location-cache")
 	public LatLng fetchCoordinatesByLocation(String loc, String gmapKey) {
 		GeoApiContext context = new GeoApiContext.Builder().apiKey(gmapKey)
 					.build();
