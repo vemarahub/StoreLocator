@@ -27,26 +27,23 @@ public class LocationUtilTest {
 		long lng=6;
 		long lat=52;
 		
-		GeoApiContext context = new GeoApiContext.Builder().apiKey(gmapKey)
-					.build();
-			GeocodingResult[] results = null;
-			
-			LatLng coordinates = null;
+		LocationUtil locationUtil = new LocationUtil();
+		LatLng coordinates = locationUtil.fetchCoordinatesByLocation(loc, gmapKey);
 		
-				try {
-					results = GeocodingApi.geocode(context, loc).await();
-				} catch (ApiException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				coordinates = results[0].geometry.location;
+		/*
+		 * GeoApiContext context = new GeoApiContext.Builder().apiKey(gmapKey) .build();
+		 * GeocodingResult[] results = null;
+		 * 
+		 * LatLng coordinates = null;
+		 * 
+		 * try { results = GeocodingApi.geocode(context, loc).await(); } catch
+		 * (ApiException e) { // TODO Auto-generated catch block e.printStackTrace(); }
+		 * catch (InterruptedException e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); } catch (IOException e) { // TODO Auto-generated catch
+		 * block e.printStackTrace(); }
+		 * 
+		 * coordinates = results[0].geometry.location;
+		 */
 				assertNotNull(coordinates);
 				
 				assertEquals( lat, Math.round(coordinates.lat));

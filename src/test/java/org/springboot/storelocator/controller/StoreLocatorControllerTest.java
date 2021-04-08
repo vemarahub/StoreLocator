@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -174,35 +176,84 @@ class StoreLocatorControllerTest {
 		this.mockMvc.perform(delete("/stores/100").content(newStoreAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
 	}
+	
+	@Test
+	 void testDeleteStoreNotFound() throws Exception {
+		Store newStore = stores.getStores().get(0);
+		ObjectMapper mapper = new ObjectMapper();
+		String newStoreAsJSON = mapper.writeValueAsString(newStore);
+		given(this.storeService.findStoreById(990)).willReturn(stores.getStores().get(0));
+		this.mockMvc.perform(delete("/stores/290").content(newStoreAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isNotFound());
+	}
 
 	@Test
 	 void testUpdateStore() throws Exception {
 		Store newStore = stores.getStores().get(0);
 		newStore.setStoreName("Tommy");
+		ObjectMapper mapper = new ObjectMapper();
+		String newStoreAsJSON = mapper.writeValueAsString(newStore);
+		given(this.storeService.findStoreById(102)).willReturn(stores.getStores().get(0));
+		this.mockMvc.perform(put("/stores/102").content(newStoreAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
 		
+	}
+	
+	@Test
+	 void testUpdateStoreNotFound() throws Exception {
+		Store newStore = stores.getStores().get(0);
+		newStore.setStoreName("Tommy");
+		ObjectMapper mapper = new ObjectMapper();
+		String newStoreAsJSON = mapper.writeValueAsString(newStore);
+		given(this.storeService.findStoreById(912)).willReturn(stores.getStores().get(0));
+		this.mockMvc.perform(put("/stores/182").content(newStoreAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isNotFound());
 		
-		storeService.updateStore(newStore);
-		queryParams=null;
-		when(this.storeService.getStores(queryParams,false)).thenReturn(stores);
-		ResponseEntity<Object> response = storeLocatorController.getStores(queryParams,false);
-		Stores storesData = (Stores) response.getBody();
-		
-		assertNotNull(storesData);
-		assertEquals(newStore, storesData.getStores().get(0));
-
-
 	}
 
     @Test   
      void testCreateStores() throws Exception {
+    	Store newStore = StoreGenerator.generate(9852, "Store New", "Monte Carlo", "France");
+    	List<Store> storeList = new ArrayList<Store>();
+    	storeList.add(newStore);
     	
-    	storeService.saveStores(stores);
-    	when(this.storeService.getStores(queryParams,false)).thenReturn(stores);
-    	ResponseEntity<Object> response = storeLocatorController.getStores(queryParams,false);
-		Stores storesData = (Stores) response.getBody();
+    	Stores newStores = new Stores();
+    	newStores.setStores(storeList);
+    	ObjectMapper mapper = new ObjectMapper();
+		String newStoresAsJSON = mapper.writeValueAsString(newStores);	
+		this.mockMvc.perform(post("/stores/").content(newStoresAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isCreated());
 		
-		assertNotNull(storesData);
-		assertEquals(stores.getStores().get(0).getStoreId() ,storesData.getStores().get(0).getStoreId());
-		
+				
     }
+    
+    @Test   
+    void testCreateStoresExists() throws Exception {
+   	Store newStore = StoreGenerator.generate(9852, "Store New", "Monte Carlo", "France");
+   	List<Store> storeList = new ArrayList<Store>();
+   	storeList.add(newStore);
+   	
+   	Stores newStores = new Stores();
+   	newStores.setStores(storeList);
+   	ObjectMapper mapper = new ObjectMapper();
+		String newStoresAsJSON = mapper.writeValueAsString(newStores);
+		given(this.storeService.findStoreById(9852)).willReturn(stores.getStores().get(0));
+		this.mockMvc.perform(post("/stores/").content(newStoresAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isBadRequest());
+		
+				
+   }
+    
+    @Test   
+    void testCreateStoresInvalid() throws Exception {
+   	Store newStore = StoreGenerator.generate(9852, "Store New", "Monte Carlo", "France");
+ 
+   	ObjectMapper mapper = new ObjectMapper();
+		String newStoresAsJSON = mapper.writeValueAsString(newStore);
+		given(this.storeService.findStoreById(9852)).willReturn(stores.getStores().get(0));
+		this.mockMvc.perform(post("/stores/").content(newStoresAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isInternalServerError());
+		
+				
+   }
 }
