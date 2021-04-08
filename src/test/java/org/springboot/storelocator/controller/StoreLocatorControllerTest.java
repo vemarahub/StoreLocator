@@ -210,6 +210,25 @@ class StoreLocatorControllerTest {
 				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isNotFound());
 		
 	}
+	
+	@Test
+	 void testUpdateStoreInvalid() throws Exception {
+	   	Store newStore = StoreGenerator.generate(9852, "Store New", "Monte Carlo", "France");
+	   	List<Store> storeList = new ArrayList<Store>();
+	   	storeList.add(newStore);
+	   	
+	   	Stores newStores = new Stores();
+	   	newStores.setStores(storeList);
+	   	
+		ObjectMapper mapper = new ObjectMapper();
+		String newStoreAsJSON = mapper.writeValueAsString(newStores);
+		given(this.storeService.findStoreById(102)).willReturn(stores.getStores().get(0));
+		this.mockMvc.perform(put("/stores/102").content(newStoreAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isBadRequest());
+		
+	}
+	
+	
 
     @Test   
      void testCreateStores() throws Exception {
